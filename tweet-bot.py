@@ -3,6 +3,7 @@ from __future__ import unicode_literals # za naša slova
 import tweepy, urllib, json, random, schedule, time, sys, os
 
 response = urllib.urlopen("https://baza-podataka.herokuapp.com/quotes/")
+quotes = json.load(response)
 # SETUP TWEEPY (from env variables)
 auth = tweepy.OAuthHandler(os.environ['CONSUMER_KEY'], os.environ['CONSUMER_SECRET'])
 auth.set_access_token(os.environ['ACCESS_KEY'], os.environ['ACCESS_SECRET'])
@@ -10,7 +11,7 @@ api = tweepy.API(auth)
 
 # FUNKCIJE
 
-def filtriraj(quotes):
+def filtriraj():
     f = open("fajl.txt", 'r+')
     objavljeno = f.readlines()
     sr_citati = [q for q in quotes if q["sr"]]
@@ -22,8 +23,8 @@ def sacuvaj(id):
     with open("fajl.txt", "a") as fajl:
         fajl.write(id + "\n")
 
-def dajIzreku(quotes):
-    citat = random.choice(quotes)
+def dajIzreku(filtrirano):
+    citat = random.choice(filtrirano)
     sacuvaj(citat["_id"])
     tekst = citat["sr"]
     autor = citat["author"]
@@ -31,7 +32,7 @@ def dajIzreku(quotes):
     — {1}""".format(tekst, autor)
 
 def objavi():
-    filtrirano = filtriraj(json.load(response))
+    filtrirano = filtriraj()
     izreka = dajIzreku(filtrirano)
     if len(izreka) <= 280:
         api.update_status(status=izreka)
