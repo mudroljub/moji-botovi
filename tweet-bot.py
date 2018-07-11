@@ -30,18 +30,18 @@ def dajIzreku(quotes):
     return """"{0}"
     — {1}""".format(tekst, autor)
 
-def objavi(api):
+def objavi():
     filtrirano = filtriraj(json.load(response))
     izreka = dajIzreku(filtrirano)
     if len(izreka) <= 280:
         api.update_status(status=izreka)
         print(izreka)
     else:
-        objavi(api)
+        objavi()
 
 # INIT
 
-objavi(api)
+objavi()
 
 schedule.every(30).minutes.do(objavi)
 
